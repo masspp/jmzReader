@@ -139,12 +139,26 @@ public class Ms2Query implements Spectrum {
           String secondHalf = cleanedLine.substring(indexSpace + 1);
           int anotherSpace = secondHalf.indexOf(' ');
           Double intensity;
+          Int charge = 0;
           if (anotherSpace<0) {
             intensity = Double.parseDouble(secondHalf);
           } else { // ignore extra fragment charge number (3rd field), may be present
-            intensity = StringUtils.smartParseDouble((secondHalf.substring(0, anotherSpace)));
+            intensity = StringUtils.smartParseDouble(secondHalf.substring(0, anotherSpace));
+            String last_pieace = secondHalf.substring( anotherSpace +1) ; 
+            int otherSpace = last_pieace.indexOf(' ');
+            
+            // assumed that third part is charge (I may change to recieve third part as double instead of integer)
+            if (otherSpace <0){
+              charge = StringUtils.smartParseInt(last_pieace);
+            }else{
+              charge = StringUtils.smartParseInt(last_pieace.substring(0, anotherSpace));
+            }
+            
           }
           addPeak(Double.parseDouble(firstHalf), intensity);
+          
+          //TODO: save charge into collecttion like ArrayList<Map<Double, Pair<Double,Integer>>.
+          
         } else {  // no index could be found
           if(ignoreWrongPeaks){
             logger.error("The following peaks and wronly annotated -- " + line);
